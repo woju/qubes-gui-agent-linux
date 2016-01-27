@@ -2,13 +2,18 @@
 # -*- makefile -*-
 
 # Uncomment this to turn on verbose mode.
-#export DH_VERBOSE=1
+export DH_VERBOSE=1
 
-export DESTDIR=$(shell pwd)/debian/qubes-gui-agent
 export LIBDIR=/usr/lib
+
+# (Build-Depends += debhelper qubes-builder quilt)
+include /usr/share/qubes-builder/default.mk
 
 %:
 	dh $@ --with systemd
+
+setup:: patch get-orig-source
+	@$(call debug,$@ $(blue)[$?] stem=$* member=$%)
 
 override_dh_auto_build:
 	make appvm
@@ -19,3 +24,4 @@ override_dh_auto_install:
 override_dh_systemd_start:
 	dh_systemd_start --no-restart-on-upgrade
 
+.PHONY: setup
